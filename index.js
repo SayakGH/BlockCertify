@@ -1,7 +1,7 @@
 import express from "express"
 import cors from "cors"
 import mongoose from "mongoose";
-import { loginUser, registerUser , loginOrg , registerOrg } from "./controller/auth.js";
+import { login, registerUser, registerOrg } from "./controller/auth.js";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import { createCertificate } from "./certificate/certificate.js";
@@ -20,11 +20,9 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(cors());
 
 //routes
-app.post('/auth/user/login',loginUser);
+app.post('/auth/login',login);
 
 app.post('/auth/user/register',registerUser);
-
-app.post('/auth/org/login',loginOrg);
 
 app.post('/auth/org/register',registerOrg);
 

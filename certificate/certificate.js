@@ -26,7 +26,7 @@ export const createCertificate= async (req,res)=>{
         const org = jwt.verify(token,process.env.JWT_SECRET);
     
         const organizaation= await Org.findOne({ _id : org.id });
-        const issue="C:\Users\sayak\OneDrive\Desktop\server\assets\certificate_generated_from_python.png"
+        const issue="../assets/certificate_generated_from_python.png"
         
         // const Name = user.firstname +" "+user.lastname;
     

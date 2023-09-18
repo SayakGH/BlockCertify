@@ -4,28 +4,6 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 
-//Login User
-
-export const loginUser = async (req,res)=>{
-    try {
-        const{ phone , pin } =req.body;
-        const user = await User.findOne({ phone : phone });
-        if(!user)
-        return res.status(400).json({ msg : "User does not exist. "})
-        
-        const isMatch = await bcrypt.compare(pin, user.pin);
-        if(!isMatch)
-        return res.status(400).json({ msg: "Invalid credentials. "});
-        
-        const token  = jwt.sign( { id: user._id},process.env.JWT_SECRET );
-        delete user.pin;
-        res.status(200).json({ token, user });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-
 export const registerUser = async (req,res)=>{
     try {
         const{
@@ -88,23 +66,36 @@ export const registerOrg= async (req,res)=>{
     }
 }
 
-//organisation login
+// login
 
-export const loginOrg= async (req,res)=>{
+export const login= async (req,res)=>{
     try {
         const{ email , password } =req.body;
         const org = await Org.findOne({ email : email });
-        if(!org)
-        return res.status(400).json({ msg : "Organisation does not exist. "})
+        const user = await User.findOne({ email : email });
+        if(!org&& !user)
+        return res.status(400).json({ msg : "Invalid login credentials. "})
+        if(!user)//email is of an organisation
+        {
+            const isMatch = await bcrypt.compare(password, org.password);
+            if(!isMatch)
+            return res.status(400).json({ msg: "Invalid credentials. "});
+            const token  = jwt.sign( { id: org._id},process.env.JWT_SECRET );
+            delete org.password;
+            res.status(200).json({ token, org, type:"organization" });
+        }
+        if(!org)//email is of user
+        {
+            const isMatch = await bcrypt.compare(password, user.pin);
+            if(!isMatch)
+            return res.status(400).json({ msg: "Invalid credentials. "});
         
-        const isMatch = await bcrypt.compare(password, org.password);
-        if(!isMatch)
-        return res.status(400).json({ msg: "Invalid credentials. "});
-        
-        const token  = jwt.sign( { id: org._id},process.env.JWT_SECRET );
-        delete org.password;
-        res.status(200).json({ token, org });
+            const token  = jwt.sign( { id: user._id},process.env.JWT_SECRET );
+            delete user.pin;
+            delete user.certificates;
+            res.status(200).json({ token, user, type:"user" });
+        }
     } catch (error) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ error: error.message });
     }
 }
