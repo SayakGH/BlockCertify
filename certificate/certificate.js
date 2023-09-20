@@ -9,31 +9,29 @@ import jwt from "jsonwebtoken";
 export const createCertificate= async (req,res)=>{
     try {
         const {
-            firstname,
-            lastname,
-            phone,
+            name,
+            email,
             token
         }=req.body;
     
         const user = await User.findOne({
-            firstname:firstname,
-            lastname:lastname,
-            phone:phone
+            name:name,
+            email:email
         })
         if(!user)
         return res.status(400).json({ msg : "User does not exist. "});
 
         const org = jwt.verify(token,process.env.JWT_SECRET);
     
-        const organizaation= await Org.findOne({ _id : org.id });
+        const organization= await Org.findOne({ _id : org.id });
         const issue="../assets/certificate_generated_from_python.png"
         
-        // const Name = user.firstname +" "+user.lastname;
+        const Name = user.firstname +" "+user.lastname;
     
-        // const python_process = spawn('python',['./certificate.py',Name]);
-        // python_process.stdout.on('data',(data)=>{
-        //     console.log(data.toString())
-        // });
+        const python_process = spawn('python',['./certificate.py',Name]);
+        python_process.stdout.on('data',(data)=>{
+            console.log(data.toString())
+        });
         user.certificates.push(issue); 
 
     // Save the updated document

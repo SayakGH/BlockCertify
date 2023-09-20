@@ -14,6 +14,14 @@ const OrgSchema = new mongoose.Schema({
         required:true,
         min:5
     },
+    website:{
+        type:URL,
+        required:true
+    },
+    address:{
+        type:String,
+        default:""
+    },
     issues:{
         type:Array,
         default:[]

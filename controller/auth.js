@@ -7,27 +7,26 @@ import jwt from 'jsonwebtoken';
 export const registerUser = async (req,res)=>{
     try {
         const{
-            firstname,
-            lastname,
+            name,
             phone,
             email,
-            pin,
+            password,
+            address
         }=req.body;
 
-        const check = await Org.findOne({phone:phone});
+        const check = await User.findOne({phone:phone});
         if(check)
         res.status(400).json({msg:"User already exists "});
 
         const salt = await bcrypt.genSalt();
-        const pinHash = await bcrypt.hash(pin,salt);
+        const passwordHash = await bcrypt.hash(password,salt);
 
         const newUser= new User({
-            firstname:firstname,
-            lastname:lastname,
+            name:name,
             phone:phone,
             email:email,
-            pin:pinHash,
-            certificates
+            password:passwordHash,
+            address:address
         });
         const savedUser = await newUser.save();
         res.status(201).json(savedUser);
@@ -43,6 +42,8 @@ export const registerOrg= async (req,res)=>{
         const{
             name,
             email,
+            website,
+            address,
             password
         }=req.body;
 
@@ -54,10 +55,11 @@ export const registerOrg= async (req,res)=>{
         const passwordHash = await bcrypt.hash(password,salt);
 
         const newOrg= new Org({
-            name,
-            email,
-            password:passwordHash,
-            issues
+            name:name,
+            email:email,
+            website:website,
+            address:address,
+            password:passwordHash
         });
         const savedOrg = await newOrg.save();
         res.status(201).json(savedOrg);
@@ -86,12 +88,12 @@ export const login= async (req,res)=>{
         }
         if(!org)//email is of user
         {
-            const isMatch = await bcrypt.compare(password, user.pin);
+            const isMatch = await bcrypt.compare(password, user.password);
             if(!isMatch)
             return res.status(400).json({ msg: "Invalid credentials. "});
         
             const token  = jwt.sign( { id: user._id},process.env.JWT_SECRET );
-            delete user.pin;
+            delete user.password;
             delete user.certificates;
             res.status(200).json({ token, user, type:"user" });
         }
