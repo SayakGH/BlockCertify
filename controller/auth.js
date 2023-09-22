@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import Org from '../models/Org.js'
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
+import certificate from "../models/certi.js";
 
 export const registerUser = async (req,res)=>{
     try {
@@ -49,7 +49,7 @@ export const registerOrg= async (req,res)=>{
 
         const check = await Org.findOne({email:email,name:name});
         if(check)
-        res.status(400).json({msg:"Organization already exists "});
+        res.status(400).json({error:"Organization already exists "});
 
         const salt = await  bcrypt.genSalt();
         const passwordHash = await bcrypt.hash(password,salt);
@@ -95,7 +95,9 @@ export const login= async (req,res)=>{
             const token  = jwt.sign( { id: user._id},process.env.JWT_SECRET );
             delete user.password;
             delete user.certificates;
+            
             res.status(200).json({ token, user, type:"user" });
+
         }
     } catch (error) {
         res.status(500).json({ error: error.message });

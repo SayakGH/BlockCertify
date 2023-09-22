@@ -8,6 +8,7 @@ import { createCertificate } from "./certificate/certificate.js";
 import helmet from "helmet";
 import { viewCertificate } from "./controller/certificate.js";
 import { verifyUserToken,verifyOrgToken } from "./middleware/auth.js";
+import {validate} from "./controller/validate.js"
 
 //configurations
 
@@ -30,10 +31,14 @@ app.get('/user/certificate',verifyUserToken,viewCertificate)
 
 app.post('/org/certificate',verifyOrgToken, createCertificate)
 
+app.post('/validate',validate)
+
+
+
 //mongoose setup
 const PORT = process.env.PORT||5001;
 mongoose
-  .connect(process.env.MONGO_URL, {
+  .connect(process.env.MONGO_URL, { 
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -43,3 +48,4 @@ mongoose
    
   })
   .catch((error) => console.log(`${error} did not connect`));
+  

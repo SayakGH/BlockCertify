@@ -6,7 +6,7 @@ export const viewCertificate = async (req,res)=>{
         const user = await User.findOne({ phone:phone });
 
         if(!user)
-            return res.status(400).json({ msg : "User does not exist. "})
+            return res.status(400).json({ error : "User does not exist. "})
 
         const { certificates } = user;
         res.status(200).json({ data: certificates });

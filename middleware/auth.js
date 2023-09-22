@@ -6,12 +6,12 @@ export const verifyUserToken = async (req, res, next) => {
   try {
     const {token}=req.body;
     if (!token) {
-      return res.status(403).send("Access Denied");}
+      return res.status(403).json({error: "Access Denied"});}
     const user = jwt.verify(token,process.env.JWT_SECRET);
     
     const check= await User.findOne({ _id : user.id });
     if(!check)
-    return res.status(400).json({ msg : "User does not exist. "}); 
+    return res.status(400).json({ error : "User does not exist. "}); 
     next();
     }
 
@@ -30,10 +30,10 @@ export const verifyOrgToken = async (req,res,next)=>{
     
     const check= await Org.findOne({ _id : org.id });
     if(!check)
-    return res.status(400).json({ msg : "User does not exist. "}); 
+    return res.status(400).json({ error: "User does not exist. "}); 
     next();
   } catch (error) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: errpr.message });
   }
   
 };

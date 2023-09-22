@@ -15,7 +15,7 @@ const OrgSchema = new mongoose.Schema({
         min:5
     },
     website:{
-        type:URL,
+        type:String,
         required:true
     },
     address:{
