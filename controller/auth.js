@@ -10,8 +10,7 @@ export const registerUser = async (req,res)=>{
             name,
             phone,
             email,
-            password,
-            address
+            password
         }=req.body;
 
         const check = await User.findOne({phone:phone});
@@ -25,8 +24,7 @@ export const registerUser = async (req,res)=>{
             name:name,
             phone:phone,
             email:email,
-            password:passwordHash,
-            address:address
+            password:passwordHash
         });
         const savedUser = await newUser.save();
         res.status(201).json(savedUser);
@@ -43,7 +41,6 @@ export const registerOrg= async (req,res)=>{
             name,
             email,
             website,
-            address,
             password
         }=req.body;
 
@@ -58,7 +55,6 @@ export const registerOrg= async (req,res)=>{
             name:name,
             email:email,
             website:website,
-            address:address,
             password:passwordHash
         });
         const savedOrg = await newOrg.save();
